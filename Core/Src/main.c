@@ -104,15 +104,8 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-    // float sin = adc_getSin() / 5.0f;
-    // float cos = adc_getCos() / 5.0f;
     float sin = adc_getSin() / 3.3f - 0.5f;
     float cos = adc_getCos() / 3.3f - 0.5f;
-    // if(sin < 0) sin = -sin;
-    // if(cos < 0) cos = -cos;
-    // if(sin < 0) sin = 0;
-    // if(cos < 0) cos = 0;
-    // led_set(sin, cos, 0);
 
     float mag = sin*sin + cos*cos;
     // led_set(0, mag, 0);
@@ -134,41 +127,6 @@ int main(void)
     {
       led_off();
     }
-
-
-    // if(mag > 0.05f)
-    // {
-    //   float ang = atan2f(sin, cos) / M_PI / 2.0f + 0.5f;
-    //   if(ang < 1.0f/3.0f) {
-    //     ang = ang * 3.0f;
-    //     if(ang < 0.5f) {
-    //       led_set(1, 0, 0);
-    //     } else
-    //     {
-    //       led_set(0.5, 0.5, 0);
-    //     }
-    //   } else if (ang < 2.0f/3.0f) {
-    //     ang = ang * 3.0f - 1.0f;
-    //     if(ang < 0.5f) {
-    //       led_set(0, 1, 0 );
-    //     } else
-    //     {
-    //       led_set(0, 0.5, 0.5);
-    //     }
-    //   } else {
-    //     ang = ang * 3.0f - 2.0f;
-    //     led_set(ang, 0, 1.0f-ang);
-    //     if(ang < 0.5f) {
-    //       led_set(0, 0, 1);
-    //     } else
-    //     {
-    //       led_set(0.5, 0, 0.5);
-    //     }
-    //   }
-    // } else
-    // {
-    //   led_off();
-    // }
 
     // float deltaTime = clock_getDeltaTime();
     // led_rainbow(deltaTime);

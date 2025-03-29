@@ -33,6 +33,12 @@ extern "C" {
 /* USER CODE BEGIN Includes */
 #include "led.h"
 #include "clock.h"
+#ifndef USB_VCP
+#define USB_VCP
+#endif
+#ifndef SELF_BOOT_DFU
+#define SELF_BOOT_DFU
+#endif
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
@@ -72,6 +78,22 @@ void Error_Handler(void);
 #define LED_G_GPIO_Port GPIOA
 #define LED_B_Pin GPIO_PIN_2
 #define LED_B_GPIO_Port GPIOA
+#define STEER_VGMR_Pin GPIO_PIN_3
+#define STEER_VGMR_GPIO_Port GPIOA
+#define BSPD_Brake_Analog_Pin GPIO_PIN_4
+#define BSPD_Brake_Analog_GPIO_Port GPIOA
+#define BSE1_fused_Pin GPIO_PIN_5
+#define BSE1_fused_GPIO_Port GPIOA
+#define BSE2_fused_Pin GPIO_PIN_6
+#define BSE2_fused_GPIO_Port GPIOA
+#define APPS1_0_Pin GPIO_PIN_7
+#define APPS1_0_GPIO_Port GPIOA
+#define APPS2_0_Pin GPIO_PIN_4
+#define APPS2_0_GPIO_Port GPIOC
+#define BPPS1_0_Pin GPIO_PIN_5
+#define BPPS1_0_GPIO_Port GPIOC
+#define BPPS2_O_Pin GPIO_PIN_0
+#define BPPS2_O_GPIO_Port GPIOB
 
 /* USER CODE BEGIN Private defines */
 

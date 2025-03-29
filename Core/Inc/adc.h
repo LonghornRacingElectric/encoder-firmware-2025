@@ -41,8 +41,22 @@ extern ADC_HandleTypeDef hadc1;
 void MX_ADC1_Init(void);
 
 /* USER CODE BEGIN Prototypes */
+
 float adc_getSin();
 float adc_getCos();
+
+float adc_getApps1();
+float adc_getApps2();
+
+float adc_getBpps1();
+float adc_getBpps2();
+
+float adc_getBse1();
+float adc_getBse2();
+
+float adc_getBSPD_Brake_Analog();
+float adc_getSteerVGMR();
+
 /* USER CODE END Prototypes */
 
 #ifdef __cplusplus

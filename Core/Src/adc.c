@@ -21,7 +21,8 @@
 #include "adc.h"
 
 /* USER CODE BEGIN 0 */
-static int16_t adc_values[2];
+extern uint16_t adc_num_conversions = 10; //number of pins/inputs we have
+static int16_t adc_values[10];
 /* USER CODE END 0 */
 
 ADC_HandleTypeDef hadc1;
@@ -52,7 +53,7 @@ void MX_ADC1_Init(void)
   hadc1.Init.EOCSelection = ADC_EOC_SINGLE_CONV;
   hadc1.Init.LowPowerAutoWait = DISABLE;
   hadc1.Init.ContinuousConvMode = ENABLE;
-  hadc1.Init.NbrOfConversion = 2;
+  hadc1.Init.NbrOfConversion = 12;
   hadc1.Init.DiscontinuousConvMode = DISABLE;
   hadc1.Init.ExternalTrigConv = ADC_SOFTWARE_START;
   hadc1.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE;
@@ -97,6 +98,87 @@ void MX_ADC1_Init(void)
   {
     Error_Handler();
   }
+
+  /** Configure Regular Channel
+  */
+  sConfig.Channel = ADC_CHANNEL_1;
+  sConfig.Rank = ADC_REGULAR_RANK_3;
+  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  /** Configure Regular Channel
+  */
+  sConfig.Rank = ADC_REGULAR_RANK_4;
+  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  /** Configure Regular Channel
+  */
+  sConfig.Rank = ADC_REGULAR_RANK_5;
+  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  /** Configure Regular Channel
+  */
+  sConfig.Rank = ADC_REGULAR_RANK_6;
+  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  /** Configure Regular Channel
+  */
+  sConfig.Rank = ADC_REGULAR_RANK_7;
+  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  /** Configure Regular Channel
+  */
+  sConfig.Rank = ADC_REGULAR_RANK_8;
+  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  /** Configure Regular Channel
+  */
+  sConfig.Rank = ADC_REGULAR_RANK_9;
+  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  /** Configure Regular Channel
+  */
+  sConfig.Rank = ADC_REGULAR_RANK_10;
+  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  /** Configure Regular Channel
+  */
+  sConfig.Rank = ADC_REGULAR_RANK_11;
+  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  /** Configure Regular Channel
+  */
+  sConfig.Rank = ADC_REGULAR_RANK_12;
+  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
   /* USER CODE BEGIN ADC1_Init 2 */
   if(HAL_ADC_Start_DMA(&hadc1, (uint32_t*)adc_values, 2) != HAL_OK)
   {
@@ -130,16 +212,38 @@ void HAL_ADC_MspInit(ADC_HandleTypeDef* adcHandle)
     __HAL_RCC_ADC_CLK_ENABLE();
 
     __HAL_RCC_GPIOC_CLK_ENABLE();
+    __HAL_RCC_GPIOA_CLK_ENABLE();
+    __HAL_RCC_GPIOB_CLK_ENABLE();
     /**ADC1 GPIO Configuration
     PC0     ------> ADC1_IN1
     PC1     ------> ADC1_IN2
     PC2     ------> ADC1_IN3
     PC3     ------> ADC1_IN4
+    PA3     ------> ADC1_IN8
+    PA4     ------> ADC1_IN9
+    PA5     ------> ADC1_IN10
+    PA6     ------> ADC1_IN11
+    PA7     ------> ADC1_IN12
+    PC4     ------> ADC1_IN13
+    PC5     ------> ADC1_IN14
+    PB0     ------> ADC1_IN15
     */
-    GPIO_InitStruct.Pin = SIN_P_Pin|SIN_N_Pin|COS_P_Pin|COS_N_Pin;
+    GPIO_InitStruct.Pin = SIN_P_Pin|SIN_N_Pin|COS_P_Pin|COS_N_Pin
+                          |APPS2_0_Pin|BPPS1_0_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+
+    GPIO_InitStruct.Pin = STEER_VGMR_Pin|BSPD_Brake_Analog_Pin|BSE1_fused_Pin|BSE2_fused_Pin
+                          |APPS1_0_Pin;
+    GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+    GPIO_InitStruct.Pin = BPPS2_O_Pin;
+    GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    HAL_GPIO_Init(BPPS2_O_GPIO_Port, &GPIO_InitStruct);
 
     /* ADC1 DMA Init */
     /* ADC1 Init */
@@ -181,8 +285,22 @@ void HAL_ADC_MspDeInit(ADC_HandleTypeDef* adcHandle)
     PC1     ------> ADC1_IN2
     PC2     ------> ADC1_IN3
     PC3     ------> ADC1_IN4
+    PA3     ------> ADC1_IN8
+    PA4     ------> ADC1_IN9
+    PA5     ------> ADC1_IN10
+    PA6     ------> ADC1_IN11
+    PA7     ------> ADC1_IN12
+    PC4     ------> ADC1_IN13
+    PC5     ------> ADC1_IN14
+    PB0     ------> ADC1_IN15
     */
-    HAL_GPIO_DeInit(GPIOC, SIN_P_Pin|SIN_N_Pin|COS_P_Pin|COS_N_Pin);
+    HAL_GPIO_DeInit(GPIOC, SIN_P_Pin|SIN_N_Pin|COS_P_Pin|COS_N_Pin
+                          |APPS2_0_Pin|BPPS1_0_Pin);
+
+    HAL_GPIO_DeInit(GPIOA, STEER_VGMR_Pin|BSPD_Brake_Analog_Pin|BSE1_fused_Pin|BSE2_fused_Pin
+                          |APPS1_0_Pin);
+
+    HAL_GPIO_DeInit(BPPS2_O_GPIO_Port, BPPS2_O_Pin);
 
     /* ADC1 DMA DeInit */
     HAL_DMA_DeInit(adcHandle->DMA_Handle);
@@ -202,4 +320,45 @@ float adc_getCos()
 {
   return ((float)adc_values[1]) / 4096.0f * 3.3f;
 }
+
+float adc_getApps1()
+{
+  return ((float)adc_values[2]) / 4096.0f * 3.3f;
+}
+
+float adc_getApps2()
+{
+  return ((float)adc_values[3]) / 4096.0f * 3.3f;
+}
+
+float adc_getBpps1()
+{
+  return ((float)adc_values[4]) / 4096.0f * 3.3f;
+}
+
+float adc_getBpps2()
+{
+  return ((float)adc_values[5]) / 4096.0f * 3.3f;
+}
+
+float adc_getBse1()
+{
+  return ((float)adc_values[6]) / 4096.0f * 3.3f;
+}
+
+float adc_getBse2()
+{
+  return ((float)adc_values[7]) / 4096.0f * 3.3f;
+}
+float adc_getBSPD_Brake_Analog() //averaged BSE value
+{
+  return ((float)adc_values[8]) / 4096.0f * 3.3f;
+}
+
+float adc_getSteerVGMR()
+{
+  return ((float)adc_values[9]) / 4096.0f * 3.3f;
+}
+
+
 /* USER CODE END 1 */

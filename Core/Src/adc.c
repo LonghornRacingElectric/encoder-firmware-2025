@@ -20,6 +20,8 @@
 /* Includes ------------------------------------------------------------------*/
 #include "adc.h"
 
+#include "usb_vcp.h"
+
 /* USER CODE BEGIN 0 */
 extern uint16_t adc_num_conversions = 12; //number of pins/inputs we have
 static int16_t adc_values[12];
@@ -50,7 +52,7 @@ void MX_ADC1_Init(void)
   hadc1.Init.Resolution = ADC_RESOLUTION_12B;
   hadc1.Init.DataAlign = ADC_DATAALIGN_RIGHT;
   hadc1.Init.ScanConvMode = ADC_SCAN_ENABLE;
-  hadc1.Init.EOCSelection = ADC_EOC_SINGLE_CONV;
+  hadc1.Init.EOCSelection = ADC_EOC_SEQ_CONV;
   hadc1.Init.LowPowerAutoWait = DISABLE;
   hadc1.Init.ContinuousConvMode = ENABLE;
   hadc1.Init.NbrOfConversion = 12;
@@ -171,6 +173,7 @@ void MX_ADC1_Init(void)
   */
   sConfig.Channel = ADC_CHANNEL_14;
   sConfig.Rank = ADC_REGULAR_RANK_11;
+  sConfig.SamplingTime = ADC_SAMPLETIME_92CYCLES_5;
   if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
   {
     Error_Handler();
@@ -180,6 +183,7 @@ void MX_ADC1_Init(void)
   */
   sConfig.Channel = ADC_CHANNEL_15;
   sConfig.Rank = ADC_REGULAR_RANK_12;
+  sConfig.SamplingTime = ADC_SAMPLETIME_2CYCLES_5;
   if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
   {
     Error_Handler();
@@ -356,44 +360,46 @@ float adc_getCos()
   return ( (float)adc_values[2] - (float)adc_values[3] ) / 4096.0f * 3.3f;
 }
 
-float adc_getApps1()
+float adc_getSteerVGMR() //channel 5 rank 5
 {
   return ((float)adc_values[4]) / 4096.0f * 3.3f;
 }
 
-float adc_getApps2()
-{
-  return ((float)adc_values[3]) / 4096.0f * 3.3f;
-}
-
-float adc_getBpps1()
-{
-  return ((float)adc_values[4]) / 4096.0f * 3.3f;
-}
-
-float adc_getBpps2()
+float adc_getBSPD_Brake_Analog() //averaged BSE value rank 6 channel 9
 {
   return ((float)adc_values[5]) / 4096.0f * 3.3f;
 }
 
-float adc_getBse1()
+float adc_getBse1() //rank 7 channel 10
 {
   return ((float)adc_values[6]) / 4096.0f * 3.3f;
 }
 
-float adc_getBse2()
+float adc_getBse2() //rank 8 channel 11
 {
   return ((float)adc_values[7]) / 4096.0f * 3.3f;
 }
-float adc_getBSPD_Brake_Analog() //averaged BSE value
+
+float adc_getApps1() //rank 9channel 12
 {
   return ((float)adc_values[8]) / 4096.0f * 3.3f;
 }
 
-float adc_getSteerVGMR()
+float adc_getApps2() //rank 10 channel 13
 {
   return ((float)adc_values[9]) / 4096.0f * 3.3f;
 }
+
+float adc_getBpps1() //rank 11 channel 14
+{
+  return ((float)adc_values[10]) / 4096.0f * 3.3f;
+}
+
+float adc_getBpps2()//rank 12 channel 15
+{
+  return ((float)adc_values[11]) / 4096.0f * 3.3f;
+}
+
 
 
 /* USER CODE END 1 */

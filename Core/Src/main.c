@@ -62,7 +62,10 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
+int DMAisFinished;
+void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc1) {
+  DMAisFinished = 1;
+}
 /* USER CODE END 0 */
 
 /**
@@ -101,11 +104,11 @@ int main(void)
   MX_USB_DEVICE_Init();
   /* USER CODE BEGIN 2 */
   // HAL_ADCEx_Calibration_Start(&hadc1, ADC_SINGLE_ENDED);
+
   clock_init();
   //led_init(TIM1, &htim5, 3);
   led_init(TIM5, &htim5, 3); // replace TIM15 and &htim15 with your timer
   dfu_init(GPIOA, GPIO_PIN_15);
-  // replace 2 with the number of channels you are generating PWM over (most likely 3)
   lib_timer_init();
   /* USER CODE END 2 */
 
@@ -115,19 +118,37 @@ int main(void)
   {
     uint32_t curtime = lib_timer_ms_elapsed();
     led_rainbow(curtime / 1000.0f);
+
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+    receive_periodic();
+
+    if (DMAisFinished) {
+      // float apps1 = adc_getApps1() / 3.3f; //verified
+      // usb_printf("apps1 %f\n", apps1); // works just like printf, use like printf
+      float bpps1 = adc_getBpps1() / 3.3f;
+      usb_printf("bpps1 %f\n", bpps1); // works just like printf, use like printf
+      // float sin = adc_getSin_N();// / 3.3f - 0.5f;
+      // usb_printf("sin: %f\n", sin); //verified
+      // float cos = adc_getCos() / 3.3f - 0.5f;
+      // usb_printf("cos: %f\n", cos);
+      //
+      DMAisFinished = 0;
+    }
+
     // float apps1 = adc_getApps1() / 3.3f; //verified
     // usb_printf("apps1 %f\n", apps1); // works just like printf, use like printf
 
-    float apps2 = adc_getApps2() / 3.3f;
-    usb_printf("apps2 %f\n", apps2); // works just like printf, use like printf
-
-    receive_periodic();
+    // float apps2 = adc_getApps2() / 3.3f;
+    // usb_printf("apps2 %f\n", apps2); // works just like printf, use like printf
 
     // float bpps1 = adc_getBpps1() / 3.3f;
+    // usb_printf("bpps1 %f\n", bpps1); // works just like printf, use like printf
+    //
     // float bpps2 = adc_getBpps2() / 3.3f;
+    // usb_printf("bpps2 %f\n", bpps2); // works just like printf, use like printf
+
     //
     // float bse1 = adc_getBse1() / 3.3f;
     // float bse2 = adc_getBse2() / 3.3f;
@@ -135,7 +156,7 @@ int main(void)
     // float bspd_brake = adc_getBSPD_Brake_Analog() / 3.3f;
     // float steer_vgmr = adc_getSteerVGMR() / 3.3f;
     //
-    // float sin = adc_getSin();// / 3.3f - 0.5f;
+    // float sin = adc_getSin_N();// / 3.3f - 0.5f;
     // usb_printf("sin: %f\n", sin); //verified
     // float cos = adc_getCos() / 3.3f - 0.5f;
     // usb_printf("cos: %f\n", cos);

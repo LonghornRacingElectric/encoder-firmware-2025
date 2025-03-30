@@ -94,9 +94,9 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
-//  MX_DMA_Init();
+  MX_DMA_Init();
   MX_TIM5_Init();
-//  MX_ADC1_Init();
+  MX_ADC1_Init();
   MX_CAN1_Init();
   MX_USB_DEVICE_Init();
   /* USER CODE BEGIN 2 */
@@ -118,10 +118,11 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-    // float apps1 = adc_getApps1() / 3.3f;
-    //usb_printf("String %f\n", apps1); // works just like printf, use like printf
-//    dfu_init(GPIOA, GPIO_PIN_15); // replace GPIOA and PIN_15 with the correct GPIOX/pin for BOOT0trig
-    // float apps2 = adc_getApps2() / 3.3f;
+    // float apps1 = adc_getApps1() / 3.3f; //verified
+    // usb_printf("apps1 %f\n", apps1); // works just like printf, use like printf
+
+    float apps2 = adc_getApps2() / 3.3f;
+    usb_printf("apps2 %f\n", apps2); // works just like printf, use like printf
 
     receive_periodic();
 
@@ -134,28 +135,30 @@ int main(void)
     // float bspd_brake = adc_getBSPD_Brake_Analog() / 3.3f;
     // float steer_vgmr = adc_getSteerVGMR() / 3.3f;
     //
-    // float sin = adc_getSin() / 3.3f - 0.5f;
+    // float sin = adc_getSin();// / 3.3f - 0.5f;
+    // usb_printf("sin: %f\n", sin); //verified
     // float cos = adc_getCos() / 3.3f - 0.5f;
+    // usb_printf("cos: %f\n", cos);
     //
     // float mag = sin*sin + cos*cos;
-    // // led_set(0, mag, 0);
+    // led_set(0, mag, 0);
     //
     // if(mag > 0.03f)
     // {
     //   float ang = atan2f(sin, cos) / M_PI / 2.0f + 0.5f;
     //   if(ang < 1.0f/3.0f) {
     //     ang = ang * 3.0f;
-    //     //led_set(1.0f-ang, ang, 0);
+    //     led_set(1.0f-ang, ang, 0);
     //   } else if (ang < 2.0f/3.0f) {
     //     ang = ang * 3.0f - 1.0f;
-    //     //led_set(0, 1.0f-ang, ang);
+    //     led_set(0, 1.0f-ang, ang);
     //   } else {
     //     ang = ang * 3.0f - 2.0f;
-    //     //led_set(ang, 0, 1.0f-ang);
+    //     led_set(ang, 0, 1.0f-ang);
     //   }
     // } else
     // {
-    //   //led_off();
+    //   led_off();
     // }
 
     // float deltaTime = clock_getDeltaTime();
@@ -219,13 +222,11 @@ void Error_Handler(void)
 {
   /* USER CODE BEGIN Error_Handler_Debug */
   /* User can add his own implementation to report the HAL error return state */
-  __disable_irq();
+  // __disable_irq();
   while (1)
   {
-    //led_set(1, 0, 0);
-    for(volatile int i = 0; i < 1000000; i++) {}
-    //led_off();
-    for(volatile int i = 0; i < 1000000; i++) {}
+    led_set(255, 0, 0);
+    receive_periodic();
   }
   /* USER CODE END Error_Handler_Debug */
 }

@@ -43,6 +43,7 @@ void MX_ADC1_Init(void);
 /* USER CODE BEGIN Prototypes */
 
 float adc_getSin();
+
 float adc_getCos();
 
 float adc_getApps1();

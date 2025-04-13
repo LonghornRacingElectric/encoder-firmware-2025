@@ -46,6 +46,7 @@ float adc_getSin();
   float adc_getSin_N();
   float adc_getSin_P();
 
+  float adc_getCosN();
 float adc_getCos();
 
 float adc_getApps1();

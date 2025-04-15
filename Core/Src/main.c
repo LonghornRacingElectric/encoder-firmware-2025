@@ -135,35 +135,12 @@ int main(void)
 
     float raw_cos = adc_getCosN();
 
-    // Add to buffer (circular buffer implementation)
-    if (raw_cos != 0.0) {
-      cos_buffer[buffer_index] = raw_cos;
-    }
 
-    // Increment buffer index and wrap around if necessary
-    buffer_index = (buffer_index + 1) % FILTER_SIZE;
-
-    // Mark buffer as filled once we've collected enough samples
-    if (buffer_index == 0) {
-      buffer_filled = 1;
-    }
-
-    float cos = 0.0f;
-    int samples_to_use = buffer_filled ? FILTER_SIZE : buffer_index;
-
-    for (int i = 0; i < samples_to_use; i++) {
-      cos += cos_buffer[i];
-    }
-
-    // Divide by number of samples to get average
-    if (samples_to_use > 0) {
-      cos /= samples_to_use;
-    }
 
     // Print raw and filtered values for comparison
-    if (cos > 1.0f && cos < 2.0f) {
+    // if (cos > 1.0f && cos < 2.0f) {
       usb_printf("raw: %0.3f, filtered: %0.3f\n", raw_cos, cos);
-    }
+    // }
     // float apps1 = adc_getApps1() / 3.3f; //verified
     // usb_printf("apps1 %f\n", apps1); // works just like printf, use like printf
     // float bpps1 = adc_getBpps1() / 3.3f;
@@ -200,7 +177,7 @@ int main(void)
 //
     // Update LED with new values and add small delay
     led_set(red, green, blue);
-    HAL_Delay(20);  // Shorter delay for more responsive updates
+    HAL_Delay(2);  // Shorter delay for more responsive updates
 //claude wrote this end
 
 

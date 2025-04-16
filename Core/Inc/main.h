@@ -31,7 +31,7 @@ extern "C" {
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "led.h"
+// #include "led.h"
 #include "clock.h"
 #ifndef USB_VCP
 #define USB_VCP
@@ -64,14 +64,14 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
-#define SIN_P_Pin GPIO_PIN_0
-#define SIN_P_GPIO_Port GPIOC
-#define SIN_N_Pin GPIO_PIN_1
+#define SIN_N_Pin GPIO_PIN_0
 #define SIN_N_GPIO_Port GPIOC
-#define COS_P_Pin GPIO_PIN_2
-#define COS_P_GPIO_Port GPIOC
-#define COS_N_Pin GPIO_PIN_3
+#define SIN_P_Pin GPIO_PIN_1
+#define SIN_P_GPIO_Port GPIOC
+#define COS_N_Pin GPIO_PIN_2
 #define COS_N_GPIO_Port GPIOC
+#define COS_P_Pin GPIO_PIN_3
+#define COS_P_GPIO_Port GPIOC
 #define LED_R_Pin GPIO_PIN_0
 #define LED_R_GPIO_Port GPIOA
 #define LED_G_Pin GPIO_PIN_1

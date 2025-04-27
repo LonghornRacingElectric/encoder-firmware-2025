@@ -20,8 +20,6 @@
 /* Includes ------------------------------------------------------------------*/
 #include "adc.h"
 
-#include "usb_vcp.h"
-
 /* USER CODE BEGIN 0 */
 extern uint16_t adc_num_conversions = 12; //number of pins/inputs we have
 static int16_t adc_values[12];
@@ -270,7 +268,7 @@ void HAL_ADC_MspInit(ADC_HandleTypeDef* adcHandle)
     hdma_adc1.Init.PeriphDataAlignment = DMA_PDATAALIGN_HALFWORD;
     hdma_adc1.Init.MemDataAlignment = DMA_MDATAALIGN_HALFWORD;
     hdma_adc1.Init.Mode = DMA_CIRCULAR;
-    hdma_adc1.Init.Priority = DMA_PRIORITY_LOW;
+    hdma_adc1.Init.Priority = DMA_PRIORITY_HIGH;
     if (HAL_DMA_Init(&hdma_adc1) != HAL_OK)
     {
       Error_Handler();
@@ -278,9 +276,6 @@ void HAL_ADC_MspInit(ADC_HandleTypeDef* adcHandle)
 
     __HAL_LINKDMA(adcHandle,DMA_Handle,hdma_adc1);
 
-    /* ADC1 interrupt Init */
-    HAL_NVIC_SetPriority(ADC1_2_IRQn, 0, 0);
-    HAL_NVIC_EnableIRQ(ADC1_2_IRQn);
   /* USER CODE BEGIN ADC1_MspInit 1 */
 
   /* USER CODE END ADC1_MspInit 1 */
@@ -322,9 +317,6 @@ void HAL_ADC_MspDeInit(ADC_HandleTypeDef* adcHandle)
 
     /* ADC1 DMA DeInit */
     HAL_DMA_DeInit(adcHandle->DMA_Handle);
-
-    /* ADC1 interrupt Deinit */
-    HAL_NVIC_DisableIRQ(ADC1_2_IRQn);
   /* USER CODE BEGIN ADC1_MspDeInit 1 */
 
   /* USER CODE END ADC1_MspDeInit 1 */
@@ -342,6 +334,8 @@ float adc_getSin_P()
 {
   return ((float)adc_values[1]) / 4096.0f * 3.3f;
 }
+
+
 float adc_getSin()
 {
   return ( (float)adc_values[0] - (float)adc_values[1] ) / 4096.0f * 3.3f;
@@ -357,7 +351,11 @@ float adc_getCosP()
 }
 float adc_getCos()
 {
-  return ( (float)adc_values[2] - (float)adc_values[3] ) / 4096.0f * 3.3f;
+  return ( (float)adc_values[2] - (float)adc_values[3] ); /// 4096.0f * 3.3f;
+}
+
+float rawValTest() {
+  return adc_values[2];
 }
 
 float adc_getSteerVGMR() //channel 5 rank 5

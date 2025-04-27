@@ -50,6 +50,9 @@ float adc_getSin();
   float adc_getCosP();
 float adc_getCos();
 
+
+  float rawValTest();
+
 float adc_getApps1();
 float adc_getApps2();
 

@@ -130,16 +130,23 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-  //usb_printf("penis");
+  //usb_printf("penis <3");
     receive_periodic();
     uint32_t curtime = lib_timer_delta_ms();
+    //usb_printf((char)lib_timer_delta_ms());
      led_rainbow(curtime / 1000.0f);
 
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
 
-    float raw_cos = adc_getCosP() - adc_getCosN();
+    // raw_cos = adc_getCosP() - adc_getCosN();
+    float raw_cos = adc_getCos()/ 3.3f - 0.5f;
+    float raw_sin = adc_getSin()/ 3.3f - 0.5f;
+
+    float mag = raw_sin*raw_sin + raw_cos*raw_cos;
+    mag = sqrt(mag);
+
 
     float h = (float)curtime - prevtime;
     float timeconst = 0.050f;
@@ -150,7 +157,7 @@ int main(void)
 
     // Print raw and filtered values for comparison
     // if (cos > 1.0f && cos < 2.0f) {
-      usb_printf("raw: %0.3f, filtered: %0.3f\n", raw_cos, cos);
+      usb_printf("raw: %f, filtered: %0.3f\n", mag, cos);
     // }
     // float apps1 = adc_getApps1() / 3.3f; //verified
     // usb_printf("apps1 %f\n", apps1); // works just like printf, use like printf
@@ -277,7 +284,13 @@ void SystemClock_Config(void)
   RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI48|RCC_OSCILLATORTYPE_HSE;
   RCC_OscInitStruct.HSEState = RCC_HSE_ON;
   RCC_OscInitStruct.HSI48State = RCC_HSI48_ON;
-  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_NONE;
+  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
+  RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
+  RCC_OscInitStruct.PLL.PLLM = 1;
+  RCC_OscInitStruct.PLL.PLLN = 20;
+  RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
+  RCC_OscInitStruct.PLL.PLLQ = RCC_PLLQ_DIV2;
+  RCC_OscInitStruct.PLL.PLLR = RCC_PLLR_DIV4;
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
   {
     Error_Handler();
@@ -287,12 +300,12 @@ void SystemClock_Config(void)
   */
   RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
                               |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
-  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_HSE;
+  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
   RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV1;
   RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
 
-  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_0) != HAL_OK)
+  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_4) != HAL_OK)
   {
     Error_Handler();
   }

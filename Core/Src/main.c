@@ -120,8 +120,15 @@ int main(void)
   led_init(TIM5, &htim5, 3); // replace TIM15 and &htim15 with your timer
   dfu_init(GPIOA, GPIO_PIN_15);
   lib_timer_init();
-  float prevtime = 0.0;
-  float cos = 0.0;
+  float prevtime;
+  float cos;
+  float mag;
+  float cos_max = -INFINITY;
+  float cos_min =  INFINITY;
+  float sin_max = -INFINITY;
+  float sin_min =  INFINITY;
+  float prev_cos = 0.0;
+  float prev_sin = 0.0;
 
 
   /* USER CODE END 2 */
@@ -130,7 +137,6 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-  //usb_printf("penis <3");
     receive_periodic();
     uint32_t curtime = lib_timer_delta_ms();
     //usb_printf((char)lib_timer_delta_ms());
@@ -140,24 +146,69 @@ int main(void)
 
     /* USER CODE BEGIN 3 */
 
-    // raw_cos = adc_getCosP() - adc_getCosN();
-    float raw_cos = adc_getCos()/ 3.3f - 0.5f;
-    float raw_sin = adc_getSin()/ 3.3f - 0.5f;
+    float offset = 3.3f * 0.5f;
 
-    float mag = raw_sin*raw_sin + raw_cos*raw_cos;
-    mag = sqrt(mag);
+    float raw_cos = adc_getCos();
+    float raw_sin = adc_getSin();
 
-
+    //filtering
     float h = (float)curtime - prevtime;
     float timeconst = 0.050f;
     float alpha = h/(h+timeconst);
-    cos = raw_cos * alpha + cos * (1-alpha);
+    raw_cos = raw_cos * alpha + prev_cos * (1-alpha);
+    raw_sin = raw_sin * alpha + prev_sin * (1-alpha);
     prevtime = curtime;
+    if (prev_cos != raw_cos)
+      prev_cos = raw_cos;
+    if (prev_sin != raw_sin)
+      prev_sin = raw_sin;
+
+
+
+    //calibration
+
+    if (raw_cos < cos_min) {
+      cos_min = raw_cos;
+    }
+    if (raw_cos > cos_max) {
+      cos_max = raw_cos;
+    }
+
+    if (raw_sin < sin_min) {
+      sin_min = raw_sin;
+    }
+    if (raw_sin > sin_max) {
+      sin_max = raw_sin;
+    }
+
+    float amplitude_cos =  (cos_max - cos_min) / 2.0;
+    float amplitude_sin =  (sin_max - sin_min) / 2.0;
+
+    raw_cos = (raw_cos - offset) / amplitude_cos;
+    raw_sin = raw_sin - offset / amplitude_sin;
+
+
+
+    //calculating angle
+
+    float angle = atan2(raw_sin, raw_cos);
+    if (angle < 0)
+      angle += 2.0f * M_PI;
+    angle = angle * 180.0f / M_PI;
+
+
+
+    // float raw_mag = raw_sin*raw_sin + raw_cos*raw_cos;
+    // raw_mag = sqrt(raw_mag);
+
+
 
 
     // Print raw and filtered values for comparison
     // if (cos > 1.0f && cos < 2.0f) {
-      usb_printf("raw: %f, filtered: %0.3f\n", mag, cos);
+      // usb_printf("mag: %0.3f, filtered: %0.3f\n", adc_getCos(), adc_getSin());
+    usb_printf("Cos: %0.3f, Sin: %0.3f, Angle: %0.3f\n", adc_getCos(), adc_getSin(), angle);
+
     // }
     // float apps1 = adc_getApps1() / 3.3f; //verified
     // usb_printf("apps1 %f\n", apps1); // works just like printf, use like printf

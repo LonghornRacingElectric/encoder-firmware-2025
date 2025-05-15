@@ -338,7 +338,7 @@ float adc_getSin_P()
 
 float adc_getSin()
 {
-  return ( (float)adc_values[0] - (float)adc_values[1] ) / 4096.0f * 3.3f;
+  return (adc_getSin_P() - adc_getSin_N()); //( (float)adc_values[0] - (float)adc_values[1] ) / 4096.0f * 3.3f;
 }
 //Get Cosine differential output through single ended ADC pins
 float adc_getCosN()
@@ -351,7 +351,7 @@ float adc_getCosP()
 }
 float adc_getCos()
 {
-  return ( (float)adc_values[2] - (float)adc_values[3] ); /// 4096.0f * 3.3f;
+  return (adc_getCosP() - adc_getCosN()); //( (float)adc_values[2] - (float)adc_values[3] ) ;// 4096.0f * 3.3f;
 }
 
 float rawValTest() {

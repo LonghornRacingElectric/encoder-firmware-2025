@@ -151,47 +151,48 @@ int main(void)
     float raw_cos = adc_getCos();
     float raw_sin = adc_getSin();
 
+    float filtered_cos = raw_cos;
+    float filtered_sin = raw_sin;
+
     //filtering
-    float h = (float)curtime - prevtime;
+    float h = ((float)curtime - prevtime)/1000.0f;
     float timeconst = 0.050f;
     float alpha = h/(h+timeconst);
-    raw_cos = raw_cos * alpha + prev_cos * (1-alpha);
-    raw_sin = raw_sin * alpha + prev_sin * (1-alpha);
+    float filtered_cos = raw_cos * alpha + prev_cos * (1-alpha);
+    float filtered_sin = raw_sin * alpha + prev_sin * (1-alpha);
     prevtime = curtime;
-    if (prev_cos != raw_cos)
-      prev_cos = raw_cos;
-    if (prev_sin != raw_sin)
-      prev_sin = raw_sin;
+    prev_cos = filtered_cos;
+    prev_sin = filtered_sin;
 
 
 
     //calibration
 
-    if (raw_cos < cos_min) {
-      cos_min = raw_cos;
+    if (filtered_cos < cos_min) {
+      cos_min = filtered_cos;
     }
-    if (raw_cos > cos_max) {
-      cos_max = raw_cos;
+    if (filtered_cos > cos_max) {
+      cos_max = filtered_cos;
     }
 
-    if (raw_sin < sin_min) {
-      sin_min = raw_sin;
+    if (filtered_sin < sin_min) {
+      sin_min = filtered_sin;
     }
-    if (raw_sin > sin_max) {
-      sin_max = raw_sin;
+    if (filtered_sin > sin_max) {
+      sin_max = filtered_sin;
     }
 
     float amplitude_cos =  (cos_max - cos_min) / 2.0;
     float amplitude_sin =  (sin_max - sin_min) / 2.0;
 
-    raw_cos = (raw_cos - offset) / amplitude_cos;
-    raw_sin = raw_sin - offset / amplitude_sin;
+    filtered_cos = (filtered_cos - offset) / amplitude_cos;
+    filtered_sin = (filtered_sin - offset) / amplitude_sin;
 
 
 
     //calculating angle
 
-    float angle = atan2(raw_sin, raw_cos);
+    float angle = atan2(filtered_sin, filtered_cos);
     if (angle < 0)
       angle += 2.0f * M_PI;
     angle = angle * 180.0f / M_PI;
@@ -207,7 +208,7 @@ int main(void)
     // Print raw and filtered values for comparison
     // if (cos > 1.0f && cos < 2.0f) {
       // usb_printf("mag: %0.3f, filtered: %0.3f\n", adc_getCos(), adc_getSin());
-    usb_printf("Cos: %0.3f, Sin: %0.3f, Angle: %0.3f\n", adc_getCos(), adc_getSin(), angle);
+    usb_printf("Cos: %0.3f, Sin: %0.3f, Angle: %0.3f\n", filtered_cos, filtered_sin, angle);
 
     // }
     // float apps1 = adc_getApps1() / 3.3f; //verified

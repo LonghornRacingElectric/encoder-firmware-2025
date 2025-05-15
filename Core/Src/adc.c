@@ -21,8 +21,8 @@
 #include "adc.h"
 
 /* USER CODE BEGIN 0 */
-extern uint16_t adc_num_conversions = 10; //number of pins/inputs we have
-static int16_t adc_values[10];
+extern uint16_t adc_num_conversions = 12; //number of pins/inputs we have
+static int16_t adc_values[12];
 /* USER CODE END 0 */
 
 ADC_HandleTypeDef hadc1;
@@ -50,7 +50,7 @@ void MX_ADC1_Init(void)
   hadc1.Init.Resolution = ADC_RESOLUTION_12B;
   hadc1.Init.DataAlign = ADC_DATAALIGN_RIGHT;
   hadc1.Init.ScanConvMode = ADC_SCAN_ENABLE;
-  hadc1.Init.EOCSelection = ADC_EOC_SINGLE_CONV;
+  hadc1.Init.EOCSelection = ADC_EOC_SEQ_CONV;
   hadc1.Init.LowPowerAutoWait = DISABLE;
   hadc1.Init.ContinuousConvMode = ENABLE;
   hadc1.Init.NbrOfConversion = 12;
@@ -59,11 +59,7 @@ void MX_ADC1_Init(void)
   hadc1.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE;
   hadc1.Init.DMAContinuousRequests = ENABLE;
   hadc1.Init.Overrun = ADC_OVR_DATA_PRESERVED;
-  hadc1.Init.OversamplingMode = ENABLE;
-  hadc1.Init.Oversampling.Ratio = ADC_OVERSAMPLING_RATIO_16;
-  hadc1.Init.Oversampling.RightBitShift = ADC_RIGHTBITSHIFT_4;
-  hadc1.Init.Oversampling.TriggeredMode = ADC_TRIGGEREDMODE_SINGLE_TRIGGER;
-  hadc1.Init.Oversampling.OversamplingStopReset = ADC_REGOVERSAMPLING_CONTINUED_MODE;
+  hadc1.Init.OversamplingMode = DISABLE;
   if (HAL_ADC_Init(&hadc1) != HAL_OK)
   {
     Error_Handler();
@@ -82,7 +78,7 @@ void MX_ADC1_Init(void)
   sConfig.Channel = ADC_CHANNEL_1;
   sConfig.Rank = ADC_REGULAR_RANK_1;
   sConfig.SamplingTime = ADC_SAMPLETIME_2CYCLES_5;
-  sConfig.SingleDiff = ADC_DIFFERENTIAL_ENDED;
+  sConfig.SingleDiff = ADC_SINGLE_ENDED;
   sConfig.OffsetNumber = ADC_OFFSET_NONE;
   sConfig.Offset = 0;
   if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
@@ -92,7 +88,7 @@ void MX_ADC1_Init(void)
 
   /** Configure Regular Channel
   */
-  sConfig.Channel = ADC_CHANNEL_3;
+  sConfig.Channel = ADC_CHANNEL_2;
   sConfig.Rank = ADC_REGULAR_RANK_2;
   if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
   {
@@ -101,7 +97,7 @@ void MX_ADC1_Init(void)
 
   /** Configure Regular Channel
   */
-  sConfig.Channel = ADC_CHANNEL_1;
+  sConfig.Channel = ADC_CHANNEL_3;
   sConfig.Rank = ADC_REGULAR_RANK_3;
   if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
   {
@@ -110,6 +106,7 @@ void MX_ADC1_Init(void)
 
   /** Configure Regular Channel
   */
+  sConfig.Channel = ADC_CHANNEL_4;
   sConfig.Rank = ADC_REGULAR_RANK_4;
   if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
   {
@@ -118,6 +115,7 @@ void MX_ADC1_Init(void)
 
   /** Configure Regular Channel
   */
+  sConfig.Channel = ADC_CHANNEL_8;
   sConfig.Rank = ADC_REGULAR_RANK_5;
   if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
   {
@@ -126,6 +124,7 @@ void MX_ADC1_Init(void)
 
   /** Configure Regular Channel
   */
+  sConfig.Channel = ADC_CHANNEL_9;
   sConfig.Rank = ADC_REGULAR_RANK_6;
   if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
   {
@@ -134,6 +133,7 @@ void MX_ADC1_Init(void)
 
   /** Configure Regular Channel
   */
+  sConfig.Channel = ADC_CHANNEL_10;
   sConfig.Rank = ADC_REGULAR_RANK_7;
   if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
   {
@@ -142,6 +142,7 @@ void MX_ADC1_Init(void)
 
   /** Configure Regular Channel
   */
+  sConfig.Channel = ADC_CHANNEL_11;
   sConfig.Rank = ADC_REGULAR_RANK_8;
   if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
   {
@@ -150,6 +151,7 @@ void MX_ADC1_Init(void)
 
   /** Configure Regular Channel
   */
+  sConfig.Channel = ADC_CHANNEL_12;
   sConfig.Rank = ADC_REGULAR_RANK_9;
   if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
   {
@@ -158,6 +160,7 @@ void MX_ADC1_Init(void)
 
   /** Configure Regular Channel
   */
+  sConfig.Channel = ADC_CHANNEL_13;
   sConfig.Rank = ADC_REGULAR_RANK_10;
   if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
   {
@@ -166,7 +169,9 @@ void MX_ADC1_Init(void)
 
   /** Configure Regular Channel
   */
+  sConfig.Channel = ADC_CHANNEL_14;
   sConfig.Rank = ADC_REGULAR_RANK_11;
+  sConfig.SamplingTime = ADC_SAMPLETIME_92CYCLES_5;
   if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
   {
     Error_Handler();
@@ -174,13 +179,15 @@ void MX_ADC1_Init(void)
 
   /** Configure Regular Channel
   */
+  sConfig.Channel = ADC_CHANNEL_15;
   sConfig.Rank = ADC_REGULAR_RANK_12;
+  sConfig.SamplingTime = ADC_SAMPLETIME_2CYCLES_5;
   if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
   {
     Error_Handler();
   }
   /* USER CODE BEGIN ADC1_Init 2 */
-  if(HAL_ADC_Start_DMA(&hadc1, (uint32_t*)adc_values, 2) != HAL_OK)
+  if(HAL_ADC_Start_DMA(&hadc1, (uint32_t*)adc_values, 12) != HAL_OK)
   {
     Error_Handler();
   }
@@ -234,7 +241,7 @@ void HAL_ADC_MspInit(ADC_HandleTypeDef* adcHandle)
     PC5     ------> ADC1_IN14
     PB0     ------> ADC1_IN15
     */
-    GPIO_InitStruct.Pin = SIN_P_Pin|SIN_N_Pin|COS_P_Pin|COS_N_Pin
+    GPIO_InitStruct.Pin = SIN_N_Pin|SIN_P_Pin|COS_N_Pin|COS_P_Pin
                           |APPS2_0_Pin|BPPS1_0_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
@@ -261,7 +268,7 @@ void HAL_ADC_MspInit(ADC_HandleTypeDef* adcHandle)
     hdma_adc1.Init.PeriphDataAlignment = DMA_PDATAALIGN_HALFWORD;
     hdma_adc1.Init.MemDataAlignment = DMA_MDATAALIGN_HALFWORD;
     hdma_adc1.Init.Mode = DMA_CIRCULAR;
-    hdma_adc1.Init.Priority = DMA_PRIORITY_LOW;
+    hdma_adc1.Init.Priority = DMA_PRIORITY_HIGH;
     if (HAL_DMA_Init(&hdma_adc1) != HAL_OK)
     {
       Error_Handler();
@@ -300,7 +307,7 @@ void HAL_ADC_MspDeInit(ADC_HandleTypeDef* adcHandle)
     PC5     ------> ADC1_IN14
     PB0     ------> ADC1_IN15
     */
-    HAL_GPIO_DeInit(GPIOC, SIN_P_Pin|SIN_N_Pin|COS_P_Pin|COS_N_Pin
+    HAL_GPIO_DeInit(GPIOC, SIN_N_Pin|SIN_P_Pin|COS_N_Pin|COS_P_Pin
                           |APPS2_0_Pin|BPPS1_0_Pin);
 
     HAL_GPIO_DeInit(GPIOA, STEER_VGMR_Pin|BSPD_Brake_Analog_Pin|BSE1_fused_Pin|BSE2_fused_Pin
@@ -317,54 +324,80 @@ void HAL_ADC_MspDeInit(ADC_HandleTypeDef* adcHandle)
 }
 
 /* USER CODE BEGIN 1 */
-float adc_getSin()
+
+//Get Sine differential output through single ended ADC pins
+float adc_getSin_N()
 {
   return ((float)adc_values[0]) / 4096.0f * 3.3f;
 }
-
-float adc_getCos()
+float adc_getSin_P()
 {
   return ((float)adc_values[1]) / 4096.0f * 3.3f;
 }
 
-float adc_getApps1()
+
+float adc_getSin()
+{
+  return (adc_getSin_P() - adc_getSin_N()); //( (float)adc_values[0] - (float)adc_values[1] ) / 4096.0f * 3.3f;
+}
+//Get Cosine differential output through single ended ADC pins
+float adc_getCosN()
 {
   return ((float)adc_values[2]) / 4096.0f * 3.3f;
 }
-
-float adc_getApps2()
+float adc_getCosP()
 {
   return ((float)adc_values[3]) / 4096.0f * 3.3f;
 }
+float adc_getCos()
+{
+  return (adc_getCosP() - adc_getCosN()); //( (float)adc_values[2] - (float)adc_values[3] ) ;// 4096.0f * 3.3f;
+}
 
-float adc_getBpps1()
+float rawValTest() {
+  return adc_values[2];
+}
+
+float adc_getSteerVGMR() //channel 5 rank 5
 {
   return ((float)adc_values[4]) / 4096.0f * 3.3f;
 }
 
-float adc_getBpps2()
+float adc_getBSPD_Brake_Analog() //averaged BSE value rank 6 channel 9
 {
   return ((float)adc_values[5]) / 4096.0f * 3.3f;
 }
 
-float adc_getBse1()
+float adc_getBse1() //rank 7 channel 10
 {
   return ((float)adc_values[6]) / 4096.0f * 3.3f;
 }
 
-float adc_getBse2()
+float adc_getBse2() //rank 8 channel 11
 {
   return ((float)adc_values[7]) / 4096.0f * 3.3f;
 }
-float adc_getBSPD_Brake_Analog() //averaged BSE value
+
+float adc_getApps1() //rank 9channel 12
 {
   return ((float)adc_values[8]) / 4096.0f * 3.3f;
 }
 
-float adc_getSteerVGMR()
+float adc_getApps2() //rank 10 channel 13
 {
   return ((float)adc_values[9]) / 4096.0f * 3.3f;
 }
+
+float adc_getBpps1() //rank 11 channel 14
+{
+  return ((float)adc_values[10]) / 4096.0f * 3.3f;
+}
+
+float adc_getBpps2()//rank 12 channel 15
+{
+  return ((float)adc_values[11]) / 4096.0f * 3.3f;
+}
+
 
 
 /* USER CODE END 1 */

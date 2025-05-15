@@ -43,7 +43,15 @@ void MX_ADC1_Init(void);
 /* USER CODE BEGIN Prototypes */
 
 float adc_getSin();
+  float adc_getSin_N();
+  float adc_getSin_P();
+
+  float adc_getCosN();
+  float adc_getCosP();
 float adc_getCos();
+
+
+  float rawValTest();
 
 float adc_getApps1();
 float adc_getApps2();

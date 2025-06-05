@@ -226,7 +226,7 @@ int main(void)
     // float raw_mag = raw_sin*raw_sin + raw_cos*raw_cos;
     // raw_mag = sqrt(raw_mag);
 
-    usb_printf("Cos: %0.3f, Sin: %0.3f, Angle: %0.3f\n", filtered_cos, filtered_sin, angle);
+    // usb_printf("Cos: %0.3f, Sin: %0.3f, Angle: %0.3f\n", filtered_cos, filtered_sin, angle);
 
     float red = fabs(cos);   // Use absolute value to keep red positive
 
@@ -251,7 +251,7 @@ int main(void)
 
 //other signals
     // float apps1 = adc_getApps1(); //verified
-    usb_printf("apps1 %f\n", apps1); // works just like printf, use like printf
+    // usb_printf("apps1 %f\n", apps1); // works just like printf, use like printf
 
     // float apps2 = adc_getApps2();
     // usb_printf("apps2 %f\n", apps2); // works just like printf, use like printf
@@ -264,9 +264,21 @@ int main(void)
 
     //
     // float bse1 = adc_getBse1();
-    // float bse2 = adc_getBse2();
-    //
+    // bse1 = (bse1-0.5f)/4.0f * 3000.0f;
+    // usb_printf("bse1 %f\n", bse1);
+
+
+
+
+    float bse2 = adc_getBse2();
+    bse2 = (bse2-0.5f)/4.0f * 3000.0f;
+
+    usb_printf("bse2 %f\n", bse2);
+
     // float bspd_brake = adc_getBSPD_Brake_Analog();
+    // usb_printf("bspd_brake %f\n", bspd_brake);
+
+
     // float steer_vgmr = adc_getSteerVGMR();
 
   }

@@ -155,11 +155,11 @@ int main(void)
   NightCANPacket bse_voltages_pkt = CAN_create_packet(BSE_VOLTAGES_ID, BSE_VOLTAGES_FREQ, BSE_VOLTAGES_DLC);
   CAN_AddTxPacket(&nightCan, &bse_voltages_pkt);
 
-//Brake CAN
-  // NightCANPacket bspd_brake_pedal_pkt = CAN_create_packet(BRAKE_PEDAL_ID, BRAKE_PEDAL_FREQ, BRAKE_PEDAL_DLC);
-  // CAN_AddTxPacket(&BRAKE_PEDAL, &bspd_brake_pedal_pkt);
+  //Brake CAN
+   NightCANPacket bspd_brake_pedal_pkt = CAN_create_packet(BRAKE_PEDAL_ID, BRAKE_PEDAL_FREQ, BRAKE_PEDAL_DLC);
+   CAN_AddTxPacket(&nightCan, &bspd_brake_pedal_pkt);
 
-//Steering Angle CAN
+  //Steering Angle CAN
   NightCANPacket steering_angle_pkt = CAN_create_packet(RACK_STEERING_ID, RACK_STEERING_FREQ, RACK_STEERING_DLC);
   CAN_AddTxPacket(&nightCan, &steering_angle_pkt);
   /* USER CODE END 2 */
@@ -239,7 +239,6 @@ int main(void)
     float raw_mag = raw_sin*raw_sin + raw_cos*raw_cos;
     raw_mag = sqrt(raw_mag);
 
-    // CAN_writeFloat(RACK_STEERING_STEERING_COLUMN_ANGLE_TYPE, &bspd_brake_pedal_pkt, BRAKE_PEDAL_BRAKE_PEDAL_TRAVEL_BYTE, bspd_brake, BRAKE_PEDAL_BRAKE_PEDAL_TRAVEL_PREC);
 
   // usb_printf("raw_mag = %f\n", raw_mag);
     // usb_printf("Cos: %0.3f, Sin: %0.3f, Angle: %0.3f\n", filtered_cos, filtered_sin, angle);
@@ -277,27 +276,27 @@ int main(void)
 
     float bpps1 = adc_getBpps1();
     // usb_printf("bpps1 %f\n", bpps1);
-    // CAN_writeFloat(BPPS_VOLTAGES_BPPS1_TRAVEL_TYPE, &bpps1_voltages_pkt, BPPS_VOLTAGES_BPPS1_TRAVEL_BYTE, bpps1, BPPS_VOLTAGES_BPPS1_TRAVEL_PREC);
+    CAN_writeFloat(BPPS_VOLTAGES_BPPS1_VOLTAGE_TYPE, &bpps_voltages_pkt, BPPS_VOLTAGES_BPPS1_VOLTAGE_BYTE, bpps1, BPPS_VOLTAGES_BPPS1_VOLTAGE_PREC);
 
     float bpps2 = adc_getBpps2();
     // usb_printf("bpps2 %f\n", bpps2); // works just like printf, use like printf
-    // CAN_writeFloat(BPPS_VOLTAGES_BPPS2_TRAVEL_TYPE, &bpps2_voltages_pkt, BPPS_VOLTAGES_BPPS2_TRAVEL_BYTE, bpps2, BPPS_VOLTAGES_BPPS2_TRAVEL_PREC);
+    CAN_writeFloat(BPPS_VOLTAGES_BPPS2_VOLTAGE_TYPE, &bpps_voltages_pkt, BPPS_VOLTAGES_BPPS2_VOLTAGE_BYTE, bpps2, BPPS_VOLTAGES_BPPS2_VOLTAGE_PREC);
     //
     float bse1 = adc_getBse1();
     bse1 = ((bse1-0.5f)/4.0f) * 3000.0f;
     // usb_printf("bse1 %f\n", bse1);
-    // CAN_writeFloat(BSE_VOLTAGES_BSE_FRONT_VOLTAGE_TYPE, &bse1_voltages_pkt, BSE_VOLTAGES_BSE_FRONT_VOLTAGE_BYTE, bse1, BSE_VOLTAGES_BSE_FRONT_VOLTAGE_PREC);
+    CAN_writeFloat(BSE_VOLTAGES_BSE_FRONT_VOLTAGE_TYPE, &bse_voltages_pkt, BSE_VOLTAGES_BSE_FRONT_VOLTAGE_BYTE, bse1, BSE_VOLTAGES_BSE_FRONT_VOLTAGE_PREC);
 
 
     float bse2 = adc_getBse2();
     bse2 = ((bse2-0.5f)/4.0f )* 3000.0f;
     // usb_printf("bse2 %f\n", bse2);
     usb_printf("bse1 = %f, bse2 = %f", bse1, bse2);
-    // CAN_writeFloat(BSE_VOLTAGES_BSE_REAR_VOLTAGE_TYPE, &bse2_voltages_pkt, BSE_VOLTAGES_BSE_REAR_VOLTAGE_BYTE, bse2, BSE_VOLTAGES_BSE_REAR_VOLTAGE_PREC);
+    CAN_writeFloat(BSE_VOLTAGES_BSE_REAR_VOLTAGE_TYPE, &bse_voltages_pkt, BSE_VOLTAGES_BSE_REAR_VOLTAGE_BYTE, bse2, BSE_VOLTAGES_BSE_REAR_VOLTAGE_PREC);
 
     float bspd_brake = adc_getBSPD_Brake_Analog();
     usb_printf("bspd_brake %f\n", bspd_brake);
-    // CAN_writeFloat(BRAKE_PEDAL_BRAKE_PEDAL_TRAVEL_TYPE, &bspd_brake_pedal_pkt, BRAKE_PEDAL_BRAKE_PEDAL_TRAVEL_BYTE, bspd_brake, BRAKE_PEDAL_BRAKE_PEDAL_TRAVEL_PREC);
+    CAN_writeFloat(BRAKE_PEDAL_BRAKE_PEDAL_TRAVEL_TYPE, &bspd_brake_pedal_pkt, BRAKE_PEDAL_BPPS_FAULTS_BYTE, bspd_brake, BRAKE_PEDAL_BRAKE_PEDAL_TRAVEL_PREC);
 
 
     // float steer_vgmr = adc_getSteerVGMR();

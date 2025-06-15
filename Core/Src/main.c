@@ -32,6 +32,8 @@
 #include "dfu.h"
 #include "timer.h"
 #include "led.h"
+#include "night_can.h"
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -59,6 +61,9 @@ float cos_buffer[FILTER_SIZE] = {0};
 int buffer_index = 0;
 int buffer_filled = 0;
 
+#define PACKET_ID = 0x0F0; // apps voltages
+
+#define SENDING_INTERVAL_IN_MS, DATA_LENGTH_IN_BYTES);
 
 /* USER CODE END PV */
 
@@ -87,6 +92,10 @@ int main(void)
 
   /* USER CODE BEGIN 1 */
 
+  // if your packet is set to 0 ms interval, it will send immediately every time you call
+  // the CAN_AddTxPacket method. Unlikely that you will need to do this.
+  // so add this outside of your while loop unless your interval is 0ms, in which case yes add it inside the loop wherever
+
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -112,6 +121,7 @@ int main(void)
   MX_ADC1_Init();
   MX_CAN1_Init();
   MX_USB_DEVICE_Init();
+
   /* USER CODE BEGIN 2 */
   // HAL_ADCEx_Calibration_Start(&hadc1, ADC_SINGLE_ENDED);
   // HAL_TIM_Base_Start(&htim5);
@@ -130,7 +140,28 @@ int main(void)
   float prev_cos = 0.0;
   float prev_sin = 0.0;
 
+  NightCANInstance nightCan = CAN_new_instance();
+  CAN_Init( &nightCan, &hcan1, 0, 0x7FF, 0, 0); // change this line to either
 
+  //APPS CAN
+  NightCANPacket apps_voltages_pkt = CAN_create_packet(APPS_VOLTAGES_ID, APPS_VOLTAGES_FREQ, APPS_VOLTAGES_DLC);
+  CAN_AddTxPacket(&nightCan, &apps_voltages_pkt);
+
+  //BPPS CAN
+  NightCANPacket bpps_voltages_pkt = CAN_create_packet(BPPS_VOLTAGES_ID, BPPS_VOLTAGES_FREQ, BPPS_VOLTAGES_DLC);
+  CAN_AddTxPacket(&nightCan, &bpps_voltages_pkt);
+
+  //BSE CAN
+  NightCANPacket bse_voltages_pkt = CAN_create_packet(BSE_VOLTAGES_ID, BSE_VOLTAGES_FREQ, BSE_VOLTAGES_DLC);
+  CAN_AddTxPacket(&nightCan, &bse_voltages_pkt);
+
+//Brake CAN
+  // NightCANPacket bspd_brake_pedal_pkt = CAN_create_packet(BRAKE_PEDAL_ID, BRAKE_PEDAL_FREQ, BRAKE_PEDAL_DLC);
+  // CAN_AddTxPacket(&BRAKE_PEDAL, &bspd_brake_pedal_pkt);
+
+//Steering Angle CAN
+  NightCANPacket steering_angle_pkt = CAN_create_packet(RACK_STEERING_ID, RACK_STEERING_FREQ, RACK_STEERING_DLC);
+  CAN_AddTxPacket(&nightCan, &steering_angle_pkt);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -139,6 +170,12 @@ int main(void)
   {
     receive_periodic();
     uint32_t curtime = lib_timer_delta_ms();
+
+
+    CAN_periodic(&nightCan);
+    // float apps1 = adc_getApps1();
+
+
     //usb_printf((char)lib_timer_delta_ms());
      led_rainbow(curtime / 1000.0f);
 
@@ -151,8 +188,8 @@ int main(void)
     float raw_cos = adc_getCos();
     float raw_sin = adc_getSin();
 
-    float filtered_cos = raw_cos;
-    float filtered_sin = raw_sin;
+    // float filtered_cos = raw_cos;
+    // float filtered_sin = raw_sin;
 
     //filtering
     float h = ((float)curtime - prevtime)/1000.0f;
@@ -199,32 +236,14 @@ int main(void)
 
 
 
-    // float raw_mag = raw_sin*raw_sin + raw_cos*raw_cos;
-    // raw_mag = sqrt(raw_mag);
+    float raw_mag = raw_sin*raw_sin + raw_cos*raw_cos;
+    raw_mag = sqrt(raw_mag);
 
+    // CAN_writeFloat(RACK_STEERING_STEERING_COLUMN_ANGLE_TYPE, &bspd_brake_pedal_pkt, BRAKE_PEDAL_BRAKE_PEDAL_TRAVEL_BYTE, bspd_brake, BRAKE_PEDAL_BRAKE_PEDAL_TRAVEL_PREC);
 
+  // usb_printf("raw_mag = %f\n", raw_mag);
+    // usb_printf("Cos: %0.3f, Sin: %0.3f, Angle: %0.3f\n", filtered_cos, filtered_sin, angle);
 
-
-    // Print raw and filtered values for comparison
-    // if (cos > 1.0f && cos < 2.0f) {
-      // usb_printf("mag: %0.3f, filtered: %0.3f\n", adc_getCos(), adc_getSin());
-    usb_printf("Cos: %0.3f, Sin: %0.3f, Angle: %0.3f\n", filtered_cos, filtered_sin, angle);
-
-    // }
-    // float apps1 = adc_getApps1() / 3.3f; //verified
-    // usb_printf("apps1 %f\n", apps1); // works just like printf, use like printf
-    // float bpps1 = adc_getBpps1() / 3.3f;
-    // usb_printf("bpps1 %f\n", bpps1); // works just like printf, use like printf
-    // float sin = adc_getSin_N() ;// / 3.3f - 0.5f;
-
-    // if (sin > 1.0f && sin < 2.0f) {
-    //   usb_printf("sin: %f\n", sin); // probably cosine actually
-    // }
-//claude wrote this
-    // float cos = adc_getCosN();
-    //
-    // // Map the cosine value to a wider range for more visible color changes
-    // float amplified_cos = cos * 3.5f;  // Amplify small changes
     float red = fabs(cos);   // Use absolute value to keep red positive
 
     // Make green more responsive to small changes in cos
@@ -232,10 +251,6 @@ int main(void)
 
     // Add blue component that varies differently than red and green
     float blue = 2.0f - fmod(cos * 5.0f, 2.0f);  // Creates a different pattern
-
-    // // Print debug info
-    // usb_printf("cos: %0.3f, amplified: %0.3f\n",
-    //            cos, amplified_cos);
 
 //     // Constrain values to valid LED range (typically 0-1 or 0-255 depending on your system)
      if (cos >= 1.5f && cos <= 2.5f) {
@@ -248,68 +263,48 @@ int main(void)
     // Update LED with new values and add small delay
     led_set(red, green, blue);
     HAL_Delay(2);  // Shorter delay for more responsive updates
-//claude wrote this end
 
 
 
-    // float cos = (adc_getCosN());
-    //
-    // if (cos > 1.0f && cos < 2.5f) {
-    // green = green + (cos + 1);
-    //   usb_printf("cos maybe: %0.3f\n", cos ); // probably sinN actually
-    //   HAL_Delay(50);
-    //   led_set(cos, green, 0);
-    // }
-    // usb_printf("cos: %f\n", cos);
+//other signals
+    float apps1 = adc_getApps1(); //verified
+    // usb_printf("apps1 %f\n", apps1);
+    CAN_writeFloat(APPS_VOLTAGES_APPS1_VOLTAGE_TYPE, &apps_voltages_pkt, APPS_VOLTAGES_APPS1_VOLTAGE_BYTE, apps1, APPS_VOLTAGES_APPS1_VOLTAGE_PREC);
 
+    float apps2 = adc_getApps2();
+    // usb_printf("apps2 %f\n", apps2);
+    CAN_writeFloat(APPS_VOLTAGES_APPS2_VOLTAGE_TYPE, &apps_voltages_pkt, APPS_VOLTAGES_APPS2_VOLTAGE_BYTE, apps2, APPS_VOLTAGES_APPS2_VOLTAGE_PREC);
 
-    // float apps1 = adc_getApps1() / 3.3f; //verified
-    // usb_printf("apps1 %f\n", apps1); // works just like printf, use like printf
+    float bpps1 = adc_getBpps1();
+    // usb_printf("bpps1 %f\n", bpps1);
+    // CAN_writeFloat(BPPS_VOLTAGES_BPPS1_TRAVEL_TYPE, &bpps1_voltages_pkt, BPPS_VOLTAGES_BPPS1_TRAVEL_BYTE, bpps1, BPPS_VOLTAGES_BPPS1_TRAVEL_PREC);
 
-    // float apps2 = adc_getApps2() / 3.3f;
-    // usb_printf("apps2 %f\n", apps2); // works just like printf, use like printf
-
-    // float bpps1 = adc_getBpps1() / 3.3f;
-    // usb_printf("bpps1 %f\n", bpps1); // works just like printf, use like printf
-    //
-    // float bpps2 = adc_getBpps2() / 3.3f;
+    float bpps2 = adc_getBpps2();
     // usb_printf("bpps2 %f\n", bpps2); // works just like printf, use like printf
+    // CAN_writeFloat(BPPS_VOLTAGES_BPPS2_TRAVEL_TYPE, &bpps2_voltages_pkt, BPPS_VOLTAGES_BPPS2_TRAVEL_BYTE, bpps2, BPPS_VOLTAGES_BPPS2_TRAVEL_PREC);
+    //
+    float bse1 = adc_getBse1();
+    bse1 = ((bse1-0.5f)/4.0f) * 3000.0f;
+    // usb_printf("bse1 %f\n", bse1);
+    // CAN_writeFloat(BSE_VOLTAGES_BSE_FRONT_VOLTAGE_TYPE, &bse1_voltages_pkt, BSE_VOLTAGES_BSE_FRONT_VOLTAGE_BYTE, bse1, BSE_VOLTAGES_BSE_FRONT_VOLTAGE_PREC);
 
-    //
-    // float bse1 = adc_getBse1() / 3.3f;
-    // float bse2 = adc_getBse2() / 3.3f;
-    //
-    // float bspd_brake = adc_getBSPD_Brake_Analog() / 3.3f;
-    // float steer_vgmr = adc_getSteerVGMR() / 3.3f;
-    //
-    // float sin = adc_getSin_N();// / 3.3f - 0.5f;
-    // usb_printf("sin: %f\n", sin); //verified
-    // float cos = adc_getCos() / 3.3f - 0.5f;
-    // usb_printf("cos: %f\n", cos);
-    //
-    // float mag = sin*sin + cos*cos;
-    // led_set(0, mag, 0);
-    //
-    // if(mag > 0.03f)
-    // {
-    //   float ang = atan2f(sin, cos) / M_PI / 2.0f + 0.5f;
-    //   if(ang < 1.0f/3.0f) {
-    //     ang = ang * 3.0f;
-    //     led_set(1.0f-ang, ang, 0);
-    //   } else if (ang < 2.0f/3.0f) {
-    //     ang = ang * 3.0f - 1.0f;
-    //     led_set(0, 1.0f-ang, ang);
-    //   } else {
-    //     ang = ang * 3.0f - 2.0f;
-    //     led_set(ang, 0, 1.0f-ang);
-    //   }
-    // } else
-    // {
-    //   led_off();
-    // }
 
-    // float deltaTime = clock_getDeltaTime();
-    // led_rainbow(deltaTime);
+    float bse2 = adc_getBse2();
+    bse2 = ((bse2-0.5f)/4.0f )* 3000.0f;
+    // usb_printf("bse2 %f\n", bse2);
+    usb_printf("bse1 = %f, bse2 = %f", bse1, bse2);
+    // CAN_writeFloat(BSE_VOLTAGES_BSE_REAR_VOLTAGE_TYPE, &bse2_voltages_pkt, BSE_VOLTAGES_BSE_REAR_VOLTAGE_BYTE, bse2, BSE_VOLTAGES_BSE_REAR_VOLTAGE_PREC);
+
+    float bspd_brake = adc_getBSPD_Brake_Analog();
+    usb_printf("bspd_brake %f\n", bspd_brake);
+    // CAN_writeFloat(BRAKE_PEDAL_BRAKE_PEDAL_TRAVEL_TYPE, &bspd_brake_pedal_pkt, BRAKE_PEDAL_BRAKE_PEDAL_TRAVEL_BYTE, bspd_brake, BRAKE_PEDAL_BRAKE_PEDAL_TRAVEL_PREC);
+
+
+    // float steer_vgmr = adc_getSteerVGMR();
+
+    //PRINT EVERYTHING
+  usb_printf("bse1 = %f, bse2 = %f, bspd_brake = %f, apps1 = %f, apps2 = %f, bpps1 = %f, bpps2 = %f", bse1, bse2, bspd_brake, apps1, apps2, bpps1, bpps2);
+
   }
   /* USER CODE END 3 */
 }

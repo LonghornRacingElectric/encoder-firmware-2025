@@ -365,37 +365,37 @@ float adc_getSteerVGMR() //channel 5 rank 5
 
 float adc_getBSPD_Brake_Analog() //averaged BSE value rank 6 channel 9
 {
-  return ((float)adc_values[5]) / 4096.0f * 3.3f;
+  return ((float)adc_values[5]) / 4096.0f * 3.3f * 1.51f;
 }
 
 float adc_getBse1() //rank 7 channel 10
 {
-  return ((float)adc_values[6]) / 4096.0f * 3.3f;
+  return ((float)adc_values[6]) / 4096.0f * 3.3f *1.51f;
 }
 
 float adc_getBse2() //rank 8 channel 11
 {
-  return ((float)adc_values[7]) / 4096.0f * 3.3f;
+  return ((float)adc_values[7]) / 4096.0f * 3.3f*1.51f;
 }
 
 float adc_getApps1() //rank 9channel 12
 {
-  return ((float)adc_values[8]) / 4096.0f * 3.3f;
+  return ((float)adc_values[8]) / 4096.0f * 3.3f *1.51f;
 }
 
 float adc_getApps2() //rank 10 channel 13
 {
-  return ((float)adc_values[9]) / 4096.0f * 3.3f;
+  return ((float)adc_values[9]) / 4096.0f * 3.3f *1.51f;
 }
 
 float adc_getBpps1() //rank 11 channel 14
 {
-  return ((float)adc_values[10]) / 4096.0f * 3.3f;
+  return ((float)adc_values[10]) / 4096.0f * 3.3f *1.51f;
 }
 
 float adc_getBpps2()//rank 12 channel 15
 {
-  return ((float)adc_values[11]) / 4096.0f * 3.3f;
+  return ((float)adc_values[11]) / 4096.0f * 3.3f * 1.51f;
 }
 
 

@@ -1,0 +1,22 @@
+bazel_dep(name = "toolchains_arm_gnu", version = "1.1.0")
+bazel_dep(name = "rules_cc", version = "0.2.0")
+bazel_dep(name = "platforms", version = "1.0.0")
+bazel_dep(name = "aspect_bazel_lib", version = "2.20.0")
+
+arm_toolchain = use_extension("@toolchains_arm_gnu//:extensions.bzl", "arm_toolchain")
+
+arm_toolchain.arm_none_eabi()
+use_repo(arm_toolchain, "arm_none_eabi")
+register_toolchains("@arm_none_eabi//toolchain:all")
+
+arm_toolchain.arm_none_linux_gnueabihf()
+use_repo(arm_toolchain, "arm_none_linux_gnueabihf")
+register_toolchains("@arm_none_linux_gnueabihf//toolchain:all")
+
+arm_toolchain.aarch64_none_elf()
+use_repo(arm_toolchain, "aarch64_none_elf")
+register_toolchains("@aarch64_none_elf//toolchain:all")
+
+arm_toolchain.aarch64_none_linux_gnu()
+use_repo(arm_toolchain, "aarch64_none_linux_gnu")
+register_toolchains("@aarch64_none_linux_gnu//toolchain:all")

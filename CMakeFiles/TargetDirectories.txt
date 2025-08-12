@@ -1,0 +1,3 @@
+/Users/dhairyagupta/LHRe/Code/encoder-firmware-2025/CMakeFiles/encoder-firmware-2025.elf.dir
+/Users/dhairyagupta/LHRe/Code/encoder-firmware-2025/CMakeFiles/edit_cache.dir
+/Users/dhairyagupta/LHRe/Code/encoder-firmware-2025/CMakeFiles/rebuild_cache.dir

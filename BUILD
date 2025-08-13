@@ -92,6 +92,7 @@ genrule(
 
     cmd = "$(execpath @arm_none_eabi//:objcopy) -O binary $< $@",
     cmd_bat = "$(execpath @arm_none_eabi//:objcopy) -O binary $< $@",
+    # cmd_bat = "copy \"$(location @arm_none_eabi//:objcopy)\" && objcopy.exe -O ihex $< $@",
 
     tools = ["@arm_none_eabi//:objcopy"],
 )
@@ -106,7 +107,7 @@ genrule(
     outs = ["encoder_firmware_2025.hex"],
 
     cmd = "$(execpath @arm_none_eabi//:objcopy) -O ihex $< $@",
-    cmd_bat = "$(execpath @arm_none_eabi//:objcopy) -O ihex $< $@",
+    cmd_bat = "copy \"$(location @arm_none_eabi//:objcopy)\" && objcopy.exe -O ihex $< $@",
 
     tools = ["@arm_none_eabi//:objcopy"],
 )
